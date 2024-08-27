@@ -1,0 +1,6 @@
+package ${packageName};
+
+public enum ${enumName} {
+  #foreach( $enumValue in $enumValues )${enumValue}#if( $foreach.hasNext ),#{else};#end #end
+
+}

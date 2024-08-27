@@ -1,0 +1,27 @@
+package ${packageName};
+
+#if ($fomType == "ObjectClass")
+import edu.jhuapl.hlahelper.framework.ObjectClassWrapper;
+#else
+import edu.jhuapl.hlahelper.framework.InteractionValuesWrapper;
+#end
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+public class ${className} extends ${parentType} {
+
+  @Override
+  public String #if($fomType == "ObjectClass")getFOMClassName()#{else}getInteractionName()#end {
+    return "${fomName}";
+  }
+
+  public ${className}() {
+    super();
+  }
+
+#foreach( $field in $fields )
+  private ${field};
+#end
+
+}
