@@ -219,12 +219,6 @@ public class Utils {
         return ((HLAfloat64Time)timeOne).getValue()-((HLAfloat64Time)timeTwo).getValue();
     }
 
-    public static boolean attributeUpdated(RTIambassador rtIambassador, ObjectInstanceHandle objectInstanceHandle,
-                                           AttributeHandleValueMap attributeHandleValueMap, String attributeName) throws RTIexception {
-        AttributeHandle aHandle = rtIambassador.getAttributeHandle(rtIambassador.getKnownObjectClassHandle(objectInstanceHandle), attributeName);
-        return attributeHandleValueMap.containsKey(aHandle);
-    }
-
 }
 
 

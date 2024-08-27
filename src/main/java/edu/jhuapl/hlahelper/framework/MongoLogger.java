@@ -39,15 +39,12 @@ public class MongoLogger {
                 document.append(f, attributeUpdate.getClass().getMethod(getterName, null).invoke(attributeUpdate));
             } catch (IllegalAccessException e) {
                 log.log(Level.SEVERE, e.getMessage(), e);
-                e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
                 log.log(Level.SEVERE, e.getMessage(), e);
-                e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (NoSuchMethodException e) {
                 log.log(Level.SEVERE, e.getMessage(), e);
-                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         });
@@ -63,15 +60,12 @@ public class MongoLogger {
                 document.append(f, interaction.getClass().getMethod(getterName, null).invoke(interaction));
             } catch (IllegalAccessException e) {
                 log.log(Level.SEVERE, e.getMessage(), e);
-                e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
                 log.log(Level.SEVERE, e.getMessage(), e);
-                e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (NoSuchMethodException e) {
                 log.log(Level.SEVERE, e.getMessage(), e);
-                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         });
@@ -90,7 +84,6 @@ public class MongoLogger {
             docCollection.insertOne(document);
         } catch(Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
-            e.printStackTrace();
         }
     }
 }
