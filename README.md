@@ -1,3 +1,5 @@
+© 2024  The Johns Hopkins University Applied Physics Laboratory LLC.
+
 The HLA Helper is a software library written in Java to help facilitate the rapid development of federated simulations using the IEEE 1516-2010 High Level Architecture, also known as HLA-Evolved. The library provides the following functionality:
 
 1. A utility class with static encoder and decoder methods for all primitive types.
