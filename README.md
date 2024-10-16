@@ -1,6 +1,10 @@
 © 2024  The Johns Hopkins University Applied Physics Laboratory LLC.
 
-The HLA Helper is a software library written in Java to help facilitate the rapid development of federated simulations using the IEEE 1516-2010 High Level Architecture, also known as HLA-Evolved. The library provides the following functionality:
+The HLA Helper is a software library written in Java to help facilitate the rapid development of federated simulations using the IEEE 1516-2010 High Level Architecture, also known as HLA-Evolved.
+
+<img src="./images/structure.png"/>
+
+The library provides the following functionality:
 
 1. A utility class with static encoder and decoder methods for all primitive types.
    1.1. Each method handles all of the HLA code necessary to generate the native encoder or decoder, perform the required operations, and return either a byte array ready to transmit or a Java primitive for use in the federate code.
@@ -18,6 +22,8 @@ The HLA Helper is a software library written in Java to help facilitate the rapi
    5.2. Publication and subscription
    5.3. Time management and synchronization points
 
-6. A logger federate which is capable of automatically subscribing to all simulation object classes and interactions, or a specified subset, and logging all simulation events to a database. The logger creates the required schema at runtime based on the elements of the object model subscribed to.
+6. A logger federate which is capable of automatically subscribing to all simulation object classes and interactions, or a specified subset, and logging all simulation events to a database. The logger creates the required schema at runtime based on the elements of the object model subscribed to. 
 
-The code generation framework simplifies the development of new simulation federates by encapsulating the repetitive details of some HLA APIs, which both reduces development and debugging time and increases the pool of developers who can come up to speed quickly on integrating models as simulation federates.
+<img src="./images/logger_sequence.png">
+
+7. The code generation framework simplifies the development of new simulation federates by encapsulating the repetitive details of some HLA APIs, which both reduces development and debugging time and increases the pool of developers who can come up to speed quickly on integrating models as simulation federates.
