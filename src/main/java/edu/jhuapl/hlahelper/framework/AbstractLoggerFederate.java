@@ -19,6 +19,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * Abstract class for a federate that logs interactions and object attribute updates to a MongoDB database.
+ */
 public abstract class AbstractLoggerFederate extends BaseFederate {
     private static final Logger log = Logger.getLogger(AbstractLoggerFederate.class.getSimpleName());
     protected String typesPackageName;
@@ -30,6 +33,11 @@ public abstract class AbstractLoggerFederate extends BaseFederate {
         mongoLogger = new MongoLogger(simulationId);
     }
 
+    /**
+     * Finds all interaction wrapper classes in the types package.
+     * @return
+     * @throws IOException
+     */
     private Set<Class> findAllInteractionWrappers() throws IOException {
         Reflections reflections = new Reflections(typesPackageName, new SubTypesScanner(false));
         return reflections.getSubTypesOf(InteractionValuesWrapper.class)
@@ -37,6 +45,11 @@ public abstract class AbstractLoggerFederate extends BaseFederate {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Finds all object class wrapper classes in the types package.
+     * @return
+     * @throws IOException
+     */
     private Set<Class> findAllObjectClassWrappers() throws IOException {
         Reflections reflections = new Reflections(typesPackageName, new SubTypesScanner(false));
         return reflections.getSubTypesOf(ObjectClassWrapper.class)
@@ -44,6 +57,10 @@ public abstract class AbstractLoggerFederate extends BaseFederate {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Publishes and subscribes to all interactions and object classes in the types package.
+     * @throws RTIexception
+     */
     @Override
     protected void publishAndSubscribe() throws RTIexception {
         try {
@@ -78,6 +95,9 @@ public abstract class AbstractLoggerFederate extends BaseFederate {
     }
 
     @Override
+    /**
+     * Logs interactions to the MongoDB database as they are received from the RTI.
+     */
     public void receiveInteraction(InteractionClassHandle interactionClass, ParameterHandleValueMap theParameters,
                                    byte[] userSuppliedTag, OrderType sentOrdering, TransportationTypeHandle theTransport,
                                    LogicalTime theTime, OrderType receivedOrdering, SupplementalReceiveInfo receiveInfo) throws FederateInternalError {
@@ -94,6 +114,18 @@ public abstract class AbstractLoggerFederate extends BaseFederate {
         }
     }
 
+    /**
+     * Logs object attribute updates to the MongoDB database as they are received from the RTI.
+     * @param theObject
+     * @param theAttributes
+     * @param userSuppliedTag
+     * @param sentOrdering
+     * @param theTransport
+     * @param theTime
+     * @param receivedOrdering
+     * @param reflectInfo
+     * @throws FederateInternalError
+     */
     @Override
     public void reflectAttributeValues(ObjectInstanceHandle theObject, AttributeHandleValueMap theAttributes, byte[] userSuppliedTag,
                                        OrderType sentOrdering, TransportationTypeHandle theTransport, LogicalTime theTime,

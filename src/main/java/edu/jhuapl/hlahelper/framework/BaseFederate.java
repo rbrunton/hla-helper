@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+/**
+ * Base class that provides common functionality for all federates.
+ */
 public abstract class BaseFederate extends NullFederateAmbassador {
     private static final Logger log = Logger.getLogger(BaseFederate.class.getSimpleName());
     protected static final String RUN_SYNC_POINT = "Run";
@@ -58,15 +61,31 @@ public abstract class BaseFederate extends NullFederateAmbassador {
     protected Map<String, SyncPointState> synchronizationPoints = new Hashtable<>();
 
     /**
+     * Implementing classes should implement this method to setup subscriptions and publications for the federate.
      * @throws RTIexception
      */
     protected abstract void publishAndSubscribe() throws RTIexception;
 
     /**
-     *
+     * Implementing classes should implement this method to run the federate.
+     * @throws Exception
      */
     public abstract void runFederate() throws Exception;
 
+    /**
+     * Method handles all of the basic federate setup including connecting to the RTI, joining the federation, and enabling
+     * time management. It also handles the waiting for all federates to join the federation if necessary.
+     * @param federationName
+     * @param federateName
+     * @param federateType
+     * @param federateNames
+     * @param syncPointLabels
+     * @param federateJoinMonitor
+     * @param fomPath
+     * @param settingsDesignator
+     * @throws RTIexception
+     * @throws MalformedURLException
+     */
     protected void setup(String federationName, String federateName, String federateType, Set<String> federateNames,
                          Set<String> syncPointLabels, FederateJoinMonitor federateJoinMonitor, String fomPath, String settingsDesignator)
                             throws RTIexception, MalformedURLException {
@@ -126,6 +145,7 @@ public abstract class BaseFederate extends NullFederateAmbassador {
     }
 
     /**
+     * Method to handle the federate resigning from the federation and disconnecting from the RTI.
      * @throws RTIexception
      */
     protected void resign() throws RTIexception {
@@ -141,6 +161,10 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         rtIambassador.disconnect();
     }
 
+    /**
+     * Method to set up simulation synchronization points.
+     * @param syncPointLabels
+     */
     protected void setSimulationSyncPoints(Set<String> syncPointLabels) {
         for(String syncPoint : syncPointLabels) {
             synchronizationPoints.put(syncPoint, SyncPointState.None);
@@ -151,6 +175,7 @@ public abstract class BaseFederate extends NullFederateAmbassador {
     }
 
     /**
+     * Method to the federate as regulating and constrained for time management.
      * @throws InTimeAdvancingState
      * @throws FederateNotExecutionMember
      * @throws RestoreInProgress
@@ -183,6 +208,10 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         }
     }
 
+    /**
+     * Method to disable the federate as regulating and constrained for time management.
+     * @throws RTIexception
+     */
     protected void disableRegulatingAndConstrained() throws RTIexception {
         rtIambassador.disableTimeConstrained();
 
@@ -193,7 +222,7 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         timeRegulationIsEnabled = false;
     }
     /**
-     *
+     * Method to advance the federate time by the step size.
      * @throws RTIexception
      */
     protected void advanceTime() throws RTIexception
@@ -210,7 +239,7 @@ public abstract class BaseFederate extends NullFederateAmbassador {
     }
 
     /**
-     *
+     * Method to advance the federate time to the specified time.
      * @throws RTIexception
      */
     protected void advanceToTime(double newTime) throws RTIexception
@@ -227,7 +256,7 @@ public abstract class BaseFederate extends NullFederateAmbassador {
     }
 
     /**
-     *
+     * Method to advance the federate time to the specified time plus the federate offset.
      * @param currentTime
      * @throws RTIexception
      */
@@ -244,6 +273,11 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         }
     }
 
+    /**
+     * Method to get the next message from the RTI.
+     * @param theTime
+     * @throws RTIexception
+     */
     protected void getNextMessage(double theTime) throws RTIexception {
         isAdvancing = true;
         HLAfloat64Time time = timeFactory.makeTime(theTime);
@@ -255,6 +289,12 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         }
     }
 
+    /**
+     * Overridden superclass callback method. In addition to the functionality in the parent class, this method
+     * sets the federate time to the time received from the RTI and sets the advancing flag to false.
+     * @param theTime
+     * @throws FederateInternalError
+     */
     @Override
     public void timeAdvanceGrant(LogicalTime theTime) throws FederateInternalError {
         super.timeAdvanceGrant(theTime);
@@ -262,6 +302,14 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         this.isAdvancing = false;
     }
 
+    /**
+     * This method is used to publish and subscribe to attributes of an object class.
+     * @param className
+     * @param attributeNames
+     * @param subscribe
+     * @param publish
+     * @throws RTIexception
+     */
     protected void publishAndSubscribeAttributes(String className, String[] attributeNames, boolean subscribe, boolean publish) throws RTIexception {
         ObjectClassHandle objectClassHandle = rtIambassador.getObjectClassHandle(className);
         this.objectClassHandles.put(objectClassHandle.toString(), className);
@@ -281,6 +329,13 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         }
     }
 
+    /**
+     * This method is used to publish and subscribe to interactions.
+     * @param interactionClass
+     * @param subscribe
+     * @param publish
+     * @throws RTIexception
+     */
     protected void publishAndSubscribeInteraction(String interactionClass, boolean subscribe, boolean publish) throws RTIexception {
         InteractionClassHandle interactionClassHandle = rtIambassador.getInteractionClassHandle(interactionClass);
         this.interactionClassHandles.put(interactionClassHandle.toString(), interactionClass);
@@ -297,6 +352,14 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         return Utils.getTimeForDouble(rtIambassador,federateTime+lookahead);
     }
 
+    /**
+     * Overridden superclass callback method. This method handles the synchronization point announcements and achievements,
+     * updates local federate information about registered synchronization points, and sets the shutdown flag if the
+     * shutdown synchronization point is achieved.
+     * @param synchronizationPointLabel
+     * @param userSuppliedTag
+     * @throws FederateInternalError
+     */
     @Override
     public void announceSynchronizationPoint(String synchronizationPointLabel, byte[] userSuppliedTag) throws FederateInternalError {
         if(synchronizationPoints.containsKey(synchronizationPointLabel.trim())) {
@@ -307,6 +370,14 @@ public abstract class BaseFederate extends NullFederateAmbassador {
         }
     }
 
+    /**
+     * Overridden superclass callback method. This method handles the synchronization point achievements, updates local
+     * federate information about achieved synchronization points, sets the running flag if the run synchronization
+     * point is achieved, and the done flag if the shutdown synchronization point is achieved.
+     * @param synchronizationPointLabel
+     * @param failedToSyncSet
+     * @throws FederateInternalError
+     */
     @Override
     public void federationSynchronized(String synchronizationPointLabel, FederateHandleSet failedToSyncSet) throws FederateInternalError {
 
@@ -323,12 +394,24 @@ public abstract class BaseFederate extends NullFederateAmbassador {
 
     }
 
+    /**
+     * Overridden superclass callback method. This method handles the time regulation enabled callback and sets the
+     * federate time to the time received from the RTI. Additionally, it sets the time regulation enabled flag to true.
+     * @param time
+     * @throws FederateInternalError
+     */
     @Override
     public void timeRegulationEnabled(LogicalTime time) throws FederateInternalError {
         federateTime = ((HLAfloat64Time)time).getValue();
         timeRegulationIsEnabled = true;
     }
 
+    /**
+     * Overridden superclass callback method. This method handles the time constrained enabled callback and sets the
+     * federate time to the time received from the RTI. Additionally, it sets the time constrained enabled flag to true.
+     * @param time
+     * @throws FederateInternalError
+     */
     @Override
     public void timeConstrainedEnabled(LogicalTime time) throws FederateInternalError {
         federateTime = ((HLAfloat64Time)time).getValue();

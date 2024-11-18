@@ -4,6 +4,9 @@
 
 package edu.jhuapl.hlahelper.framework;
 
+/**
+ * This enum represents the state of a sync point.
+ */
 public enum SyncPointState {
     None, Registered, Achieved
 }

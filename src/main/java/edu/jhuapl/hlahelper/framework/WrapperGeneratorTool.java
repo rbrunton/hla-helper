@@ -22,15 +22,23 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class generates Java classes representing all object classes and interactions from a FOM file.
+ */
 public class WrapperGeneratorTool {
 
     static String WRAPPER_TEMPLATE = "templates/type_wrapper.vm";
     static String ENUM_WRAPPER_TEMPLATE = "templates/hla_enum.vm";
 
+    /**
+     * Main method to generate Java classes from a FOM file.
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
 
         if (args.length != 3) {
-            System.out.println("Usage: java -jar WrapperGeneratorTool.jar <FOMFile> <outputDirectory> <basePackageName>");
+            System.out.println("Usage: java -jar hla-helper-[version]-jar-with-dependencies.jar <FOMFile> <outputDirectory> <basePackageName>");
             System.exit(1);
         }
 
@@ -42,6 +50,13 @@ public class WrapperGeneratorTool {
         }
     }
 
+    /**
+     * Generate Java classes representing all object classes and interactions from a FOM file.
+     * @param fomFile The FOM file to process
+     * @param outputDirectory The directory where the generated Java classes will be written
+     * @param basePackageName The base package name for the generated Java classes
+     * @throws Exception
+     */
     public void processFOM(String fomFile, String outputDirectory, String basePackageName) throws Exception {
         // Read FOM file
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -135,6 +150,12 @@ public class WrapperGeneratorTool {
         }
     }
 
+    /**
+     * Generate a Java class representing an object class or interaction.
+     * @param outputDirectory
+     * @param wrapperData
+     * @throws IOException
+     */
     private void generateWrapper(String outputDirectory, WrapperData wrapperData) throws IOException {
         VelocityEngine velocityEngine = new VelocityEngine();
         velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
@@ -161,6 +182,12 @@ public class WrapperGeneratorTool {
         System.out.println("Generated " + outputDirectory+"/"+wrapperData.className+".java");
     }
 
+    /**
+     * Generate a Java class representing an enumerated data type.
+     * @param outputDirectory
+     * @param enumData
+     * @throws IOException
+     */
     private void generateEnumWrapper(String outputDirectory, EnumData enumData) throws IOException {
         VelocityEngine velocityEngine = new VelocityEngine();
         velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
@@ -183,6 +210,11 @@ public class WrapperGeneratorTool {
         System.out.println("Generated " + outputDirectory+"/"+enumData.enumName+".java");
     }
 
+    /**
+     * Get the fully-qualified name of an object class or interaction.
+     * @param element
+     * @return
+     */
     private String getFullName(Element element) {
         String fullName = element.getElementsByTagName("name").item(0).getTextContent();
         Element parent = (Element) element.getParentNode();
@@ -194,6 +226,11 @@ public class WrapperGeneratorTool {
         return fullName;
     }
 
+    /**
+     * Get the Java data type corresponding to an HLA data type.
+     * @param dataType
+     * @return
+     */
     private String getDataType(String dataType) {
         switch(dataType) {
             case "HLAASCIIstring", "HLAunicodeString":
@@ -216,11 +253,8 @@ public class WrapperGeneratorTool {
                 return dataType;
         }
     }
-    /*
-
-     * write .java file using filled out template
-     *
-     * for each instance of
+    /**
+     * Wrapper class to hold data through recursive traversal of FOM tree.
      */
     private class WrapperData {
         public String packageName;
@@ -231,6 +265,9 @@ public class WrapperGeneratorTool {
         public List<String> fields;
     }
 
+    /**
+     * Class to hold data for generating Java classes for enumerations.
+     */
     private class EnumData {
         public String packageName;
         public String enumName;
