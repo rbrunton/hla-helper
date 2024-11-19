@@ -11,10 +11,41 @@ The library provides the following functionality:
    1.1. Each method handles all of the HLA code necessary to generate the native encoder or decoder, perform the required operations, and return either a byte array ready to transmit or a Java primitive for use in the federate code.
    1.2. While these static methods can be called directly, there are also universal encode and decode methods, which infer the correct primitive type methods to call based on either metadata in the HLA API callback method or type information derived from the native Java object type.
 
-2. A pair of abstract super classes, one for object classes and another for interactions, capable of parsing a message received from the RTI or encoding a message for transmission.
-   2.1. The abstract classes utilize information pulled from the RTI ambassador class (a component provided by the HLA specification used to interact with the federation and query for object model metadata) and Java introspection to determine what fields on their implementing subclasses map to corresponding elements of the FOM.
+   2. A pair of abstract super classes, one for object classes and another for interactions, capable of parsing a message received from the RTI or encoding a message for transmission.
+      2.1. The abstract classes utilize information pulled from the RTI ambassador class (a component provided by the HLA specification used to interact with the federation and query for object model metadata) and Java introspection to determine what fields on their implementing subclasses map to corresponding elements of the FOM.
 
-3. A utility class which generates of all the required code to automatically convert the HLA object model, as defined in the Federation Object Model (FOM) file required by HLA-Evolved, into Java classes extending the abstract super classes for both HLA interactions and object classes, as well as custom HLA enumerations.
+      3. A utility class, WrapperGenerator.java which generates of all the required code to automatically convert the HLA object model, as defined in the Federation Object Model (FOM) file required by HLA-Evolved, into Java classes extending the abstract super classes for both HLA interactions and object classes, as well as custom HLA enumerations.
+         The utility class is capable of generating the following:
+          * A Java class for each object class defined in the FOM, with fields for each attribute and a constructor that takes the required parameters for the object class.
+          * A Java class for each interaction class defined in the FOM, with fields for each parameter and a constructor that takes the required parameters for the interaction class.
+          * A Java enumeration for each enumerated data type defined in the FOM.
+
+          As an example, this FOM object:
+
+         <img src="./images/aa_uml.png">
+
+         ...would generate the following Java class (import statements and package declaration omitted for brevity):
+
+            ```java
+            @Getter @Setter
+            public class AnomalyAlgorithmAttributes extends ObjectClassWrapper {
+               private AnomalyDetectionStatusEnum anomalyDetected = AnomalyDetectionStatusEnum.Off;
+               private double confidenceLevel = 1.0;
+               private int alarmScore = 0;
+               private HealthAndStatusEnum healthAndStatus = HealthAndStatusEnum.Healthy;
+   
+               @Override
+               public String getFOMClassName() {
+                  return "HLAobjectRoot.AnomalyAlgorithm";
+               }
+   
+               public AnomalyAlgorithmAttributes() {
+                 super();
+               }
+
+            }
+         ```
+        Similarly, the HealthAndStatusEnum and AnomalyDetectionStatusEnum would be generated when the FOM enumerations for those types were parsed by the utility class.
 
 4. A pair of change tracking aspects, utilizing the AspectJ framework, woven into all of the concrete subclasses described in part three at compile time, which allow for the HLA RTI encoding of only those object variables that have been explicitly locally modified.
 
