@@ -105,13 +105,15 @@ public class WrapperGeneratorTool {
             //   Create field
             NodeList fieldNodeList = element.getElementsByTagName("attribute");
             for(int j = 0; j < fieldNodeList.getLength(); j++) {
-                // Put <name> into field.name
-                String fName = ((Element)fieldNodeList.item(j)).getElementsByTagName("name").item(0).getTextContent();
-                fName = fName.substring(0,1).toLowerCase() + fName.substring(1);
-                // Put <dataType> into field.type
-                String fType = ((Element)fieldNodeList.item(j)).getElementsByTagName("dataType").item(0).getTextContent();
-                wrapperData.fields.add(getDataType(fType.trim()) + " " + fName);
-                //System.out.println("Added field: " + field.name + " of type " + field.type + " to " + wrapperData.className);
+                if(fieldNodeList.item(j).getParentNode().isSameNode(element)) { //don't add attributes from child object classes
+                    // Put <name> into field.name
+                    String fName = ((Element) fieldNodeList.item(j)).getElementsByTagName("name").item(0).getTextContent();
+                    fName = fName.substring(0, 1).toLowerCase() + fName.substring(1);
+                    // Put <dataType> into field.type
+                    String fType = ((Element) fieldNodeList.item(j)).getElementsByTagName("dataType").item(0).getTextContent();
+                    wrapperData.fields.add(getDataType(fType.trim()) + " " + fName);
+                    //System.out.println("Added field: " + field.name + " of type " + field.type + " to " + wrapperData.className);
+                }
             }
 
             generateWrapper(outputDirectory, wrapperData);
@@ -138,12 +140,14 @@ public class WrapperGeneratorTool {
             //   Create field
             NodeList fieldNodeList = element.getElementsByTagName("parameter");
             for(int j = 0; j < fieldNodeList.getLength(); j++) {
-                // Put <name> into field.name
-                String fName = ((Element)fieldNodeList.item(j)).getElementsByTagName("name").item(0).getTextContent();
-                fName = fName.substring(0,1).toLowerCase() + fName.substring(1);
-                // Put <dataType> into field.type
-                String fType = ((Element)fieldNodeList.item(j)).getElementsByTagName("dataType").item(0).getTextContent();
-                fields.add(getDataType(fType.trim()) + " " + fName);
+                if(fieldNodeList.item(j).getParentNode().isSameNode(element)) { //don't add parameters from child interaction classes
+                    // Put <name> into field.name
+                    String fName = ((Element)fieldNodeList.item(j)).getElementsByTagName("name").item(0).getTextContent();
+                    fName = fName.substring(0,1).toLowerCase() + fName.substring(1);
+                    // Put <dataType> into field.type
+                    String fType = ((Element)fieldNodeList.item(j)).getElementsByTagName("dataType").item(0).getTextContent();
+                    fields.add(getDataType(fType.trim()) + " " + fName);
+                }
             }
             wrapperData.fields = fields;
             generateWrapper(outputDirectory, wrapperData);
