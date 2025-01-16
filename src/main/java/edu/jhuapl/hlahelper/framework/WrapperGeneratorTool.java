@@ -177,13 +177,13 @@ public class WrapperGeneratorTool {
         context.put("fomType", wrapperData.fomType);
         context.put("fields", wrapperData.fields);
 
-        Writer writer = new FileWriter(outputDirectory+"/"+wrapperData.className+".java");
+        Writer writer = new FileWriter(outputDirectory+"/types/"+wrapperData.className+".java");
         t.merge(context, writer);
 
         writer.flush();
         writer.close();
 
-        System.out.println("Generated " + outputDirectory+"/"+wrapperData.className+".java");
+        System.out.println("Generated " + outputDirectory+"/types/"+wrapperData.className+".java");
     }
 
     /**
@@ -205,7 +205,7 @@ public class WrapperGeneratorTool {
         context.put("enumName", enumData.enumName);
         context.put("enumValues", enumData.enumValues);
 
-        Writer writer = new FileWriter(outputDirectory+"/"+enumData.enumName+".java");
+        Writer writer = new FileWriter(outputDirectory+"/types/enumerations/"+enumData.enumName+".java");
         t.merge(context, writer);
 
         writer.flush();

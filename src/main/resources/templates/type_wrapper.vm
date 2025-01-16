@@ -9,7 +9,7 @@ import edu.jhuapl.hlahelper.framework.InteractionValuesWrapper;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter(AccessLevel.PROTECTED) @Setter(AccessLevel.PROTECTED)
 public class ${className} extends ${parentType} {
 
   @Override
@@ -22,7 +22,7 @@ public class ${className} extends ${parentType} {
   }
 
 #foreach( $field in $fields )
-  private ${field};
+  protected ${field};
 #end
 
 }
